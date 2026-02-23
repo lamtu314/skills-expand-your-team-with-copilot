@@ -1,26 +1,33 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Dark mode handling
   const darkModeToggle = document.getElementById("dark-mode-toggle");
-  const darkModeIcon = darkModeToggle.querySelector(".icon");
+  
+  if (darkModeToggle) {
+    const darkModeIcon = darkModeToggle.querySelector(".icon");
 
-  // Check for saved dark mode preference
-  function initializeDarkMode() {
-    const isDarkMode = localStorage.getItem("darkMode") === "true";
-    if (isDarkMode) {
-      document.body.classList.add("dark-mode");
-      darkModeIcon.textContent = "☀️";
+    // Check for saved dark mode preference
+    function initializeDarkMode() {
+      const isDarkMode = localStorage.getItem("darkMode") === "true";
+      if (isDarkMode) {
+        document.body.classList.add("dark-mode");
+        darkModeIcon.textContent = "☀️";
+        darkModeToggle.setAttribute("aria-pressed", "true");
+      } else {
+        darkModeToggle.setAttribute("aria-pressed", "false");
+      }
     }
-  }
 
-  // Toggle dark mode
-  function toggleDarkMode() {
-    const isDarkMode = document.body.classList.toggle("dark-mode");
-    localStorage.setItem("darkMode", isDarkMode);
-    darkModeIcon.textContent = isDarkMode ? "☀️" : "🌙";
-  }
+    // Toggle dark mode
+    function toggleDarkMode() {
+      const isDarkMode = document.body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", isDarkMode);
+      darkModeIcon.textContent = isDarkMode ? "☀️" : "🌙";
+      darkModeToggle.setAttribute("aria-pressed", isDarkMode ? "true" : "false");
+    }
 
-  darkModeToggle.addEventListener("click", toggleDarkMode);
-  initializeDarkMode();
+    darkModeToggle.addEventListener("click", toggleDarkMode);
+    initializeDarkMode();
+  }
 
   // DOM elements
   const activitiesList = document.getElementById("activities-list");
