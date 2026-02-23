@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Toggle dark mode
     function toggleDarkMode() {
       const isDarkMode = document.body.classList.toggle("dark-mode");
-      localStorage.setItem("darkMode", isDarkMode);
+      localStorage.setItem("darkMode", String(isDarkMode));
       darkModeIcon.textContent = isDarkMode ? "☀️" : "🌙";
       darkModeToggle.setAttribute("aria-pressed", isDarkMode ? "true" : "false");
     }
