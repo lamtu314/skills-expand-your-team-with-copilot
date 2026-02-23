@@ -278,6 +278,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Helper function to escape HTML special characters to prevent XSS
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   // Format schedule for display - handles both old and new format
   function formatSchedule(details) {
     // If schedule_details is available, use the structured data
@@ -554,13 +561,13 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="social-share">
         <span class="share-label">Share:</span>
-        <button class="share-button share-facebook" data-activity="${name}" data-description="${details.description}" data-schedule="${formattedSchedule}" title="Share on Facebook">
+        <button class="share-button share-facebook" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" title="Share on Facebook">
           <span class="share-icon">📘</span>
         </button>
-        <button class="share-button share-twitter" data-activity="${name}" data-description="${details.description}" data-schedule="${formattedSchedule}" title="Share on Twitter">
+        <button class="share-button share-twitter" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" title="Share on Twitter">
           <span class="share-icon">🐦</span>
         </button>
-        <button class="share-button share-email" data-activity="${name}" data-description="${details.description}" data-schedule="${formattedSchedule}" title="Share via Email">
+        <button class="share-button share-email" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" title="Share via Email">
           <span class="share-icon">✉️</span>
         </button>
       </div>
@@ -604,16 +611,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const shareTwitter = activityCard.querySelector(".share-twitter");
     const shareEmail = activityCard.querySelector(".share-email");
 
-    shareFacebook.addEventListener("click", () => {
-      handleShareFacebook(name, details.description, formattedSchedule);
+    shareFacebook.addEventListener("click", (event) => {
+      const btn = event.currentTarget;
+      handleShareFacebook(btn.dataset.activity, btn.dataset.description, btn.dataset.schedule);
     });
 
-    shareTwitter.addEventListener("click", () => {
-      handleShareTwitter(name, details.description, formattedSchedule);
+    shareTwitter.addEventListener("click", (event) => {
+      const btn = event.currentTarget;
+      handleShareTwitter(btn.dataset.activity, btn.dataset.description, btn.dataset.schedule);
     });
 
-    shareEmail.addEventListener("click", () => {
-      handleShareEmail(name, details.description, formattedSchedule);
+    shareEmail.addEventListener("click", (event) => {
+      const btn = event.currentTarget;
+      handleShareEmail(btn.dataset.activity, btn.dataset.description, btn.dataset.schedule);
     });
 
     activitiesList.appendChild(activityCard);
@@ -847,7 +857,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const subject = `Mergington High School Activity: ${activityName}`;
     const body = `Hi,\n\nI wanted to share this activity with you:\n\n${activityName}\n${description}\n\nSchedule: ${schedule}\n\nCheck it out at: ${window.location.href}\n\nBest regards,`;
     const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
+    const anchor = document.createElement('a');
+    anchor.href = mailtoUrl;
+    anchor.click();
   }
 
   // Show message function
