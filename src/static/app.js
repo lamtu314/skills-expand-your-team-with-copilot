@@ -308,6 +308,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Helper function to escape HTML special characters to prevent XSS
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
   // Format schedule for display - handles both old and new format
   function formatSchedule(details) {
     // If schedule_details is available, use the structured data
@@ -582,6 +589,18 @@ document.addEventListener("DOMContentLoaded", () => {
             .join("")}
         </ul>
       </div>
+      <div class="social-share">
+        <span class="share-label">Share:</span>
+        <button class="share-button share-facebook" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" title="Share on Facebook">
+          <span class="share-icon">📘</span>
+        </button>
+        <button class="share-button share-twitter" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" title="Share on Twitter">
+          <span class="share-icon">🐦</span>
+        </button>
+        <button class="share-button share-email" data-activity="${escapeHtml(name)}" data-description="${escapeHtml(details.description)}" data-schedule="${escapeHtml(formattedSchedule)}" title="Share via Email">
+          <span class="share-icon">✉️</span>
+        </button>
+      </div>
       <div class="activity-card-actions">
         ${
           currentUser
@@ -616,6 +635,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     }
+
+    // Add click handlers for social share buttons
+    const shareFacebook = activityCard.querySelector(".share-facebook");
+    const shareTwitter = activityCard.querySelector(".share-twitter");
+    const shareEmail = activityCard.querySelector(".share-email");
+
+    shareFacebook.addEventListener("click", (event) => {
+      const btn = event.currentTarget;
+      handleShareFacebook(btn.dataset.activity, btn.dataset.description, btn.dataset.schedule);
+    });
+
+    shareTwitter.addEventListener("click", (event) => {
+      const btn = event.currentTarget;
+      handleShareTwitter(btn.dataset.activity, btn.dataset.description, btn.dataset.schedule);
+    });
+
+    shareEmail.addEventListener("click", (event) => {
+      const btn = event.currentTarget;
+      handleShareEmail(btn.dataset.activity, btn.dataset.description, btn.dataset.schedule);
+    });
 
     activitiesList.appendChild(activityCard);
   }
@@ -827,6 +866,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     );
+  }
+
+  // Social sharing functions
+  function handleShareFacebook(activityName, description, schedule) {
+    const url = window.location.href;
+    const text = `Check out ${activityName} at Mergington High School! ${description} Schedule: ${schedule}`;
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+    window.open(facebookUrl, "_blank", "width=600,height=400");
+  }
+
+  function handleShareTwitter(activityName, description, schedule) {
+    const url = window.location.href;
+    const text = `Check out ${activityName} at Mergington High School! ${description} Schedule: ${schedule}`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    window.open(twitterUrl, "_blank", "width=600,height=400");
+  }
+
+  function handleShareEmail(activityName, description, schedule) {
+    const subject = `Mergington High School Activity: ${activityName}`;
+    const body = `Hi,\n\nI wanted to share this activity with you:\n\n${activityName}\n${description}\n\nSchedule: ${schedule}\n\nCheck it out at: ${window.location.href}\n\nBest regards,`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const anchor = document.createElement('a');
+    anchor.href = mailtoUrl;
+    anchor.click();
   }
 
   // Show message function
